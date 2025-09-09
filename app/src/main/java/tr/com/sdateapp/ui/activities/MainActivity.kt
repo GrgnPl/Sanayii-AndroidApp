@@ -23,8 +23,11 @@ import tr.com.sdateapp.ui.screens.SplashScreen
 import tr.com.sdateapp.ui.common.navigation.NavDestinations
 import tr.com.sdateapp.ui.common.navigation.NavigationController
 import tr.com.sdateapp.ui.screens.LoginScreen
+import tr.com.sdateapp.ui.screens.SignupScreen
 import tr.com.sdateapp.ui.theme.SdateAppTheme
+import tr.com.sdateapp.ui.viewmodels.AuthViewModel
 import tr.com.sdateapp.ui.viewmodels.LoginViewModel
+import tr.com.sdateapp.ui.viewmodels.SignupViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,15 +52,48 @@ class MainActivity : ComponentActivity() {
                             val context = LocalContext.current
                             val coroutineScope = rememberCoroutineScope()
                             val loginViewModel: LoginViewModel = getViewModel()
-
+                            val authViewModel: AuthViewModel = getViewModel()
                             LaunchedEffect(Unit) {
                                 loginViewModel.toastMessage.collect { message ->
                                     Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                                 }
                             }
-                            LoginScreen { username, password ->
+                            LoginScreen(
+                                onLoginClick = { username, password ->
+                                    coroutineScope.launch {
+                                        loginViewModel.login(username, password)
+                                    }
+                                },
+                                onSignupNavigate = {
+                                    navController.navigate(NavDestinations.SignUpScreen.route)
+                                },
+                                onRememberMeChecked = { isChecked ->
+                                    if (isChecked)
+                                    {
+                                        authViewModel.saveToken()
+                                    }
+                                }
+                            )
+                        }
+
+                        composable(NavDestinations.SignUpScreen.route) {
+                            val context = LocalContext.current
+                            val coroutineScope = rememberCoroutineScope()
+                            val signupViewModel: SignupViewModel = getViewModel()
+
+                            LaunchedEffect(Unit) {
+                                signupViewModel.signUptoastMessage.collect { message ->
+                                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                            SignupScreen { username, password, aracPlakasi ->
                                 coroutineScope.launch {
-                                    loginViewModel.login(username, password)
+                                    val success = signupViewModel.signUp(username, password, aracPlakasi)
+                                    if (success) {
+                                        navController.navigate(NavDestinations.LoginScreen.route) {
+                                            popUpTo(NavDestinations.SignUpScreen.route) { inclusive = true }
+                                        }
+                                    }
                                 }
                             }
                         }

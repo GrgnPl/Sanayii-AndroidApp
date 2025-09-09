@@ -3,6 +3,7 @@ package tr.com.sdateapp.logic.repository
 import android.util.Log
 import tr.com.boer.boerfixturematerialstoreapp.data.network.RetrofitInstance
 import tr.com.sdateapp.logic.data.responses.LoginResponse
+import tr.com.sdateapp.logic.data.responses.SignupResponse
 
 class MainRepository {
     private val TAG = "MainRepository"
@@ -12,6 +13,26 @@ class MainRepository {
         return LoginResponse("Başarılı $username $password",true,"")
         /*try {
             val response = mainInstance.login(username,password)
+            val body = response.body()
+            if (response.isSuccessful && response.body().toString() !=null)
+            {
+              return body!!
+            }
+            else
+            {
+                Log.e(TAG,"Login Error $body")
+                return body!!
+            }
+        }catch (e: Exception){
+            Log.e(TAG,e.message.toString())
+            return LoginResponse("",false,"")
+        }*/
+    }
+
+    suspend fun signUp(username: String, password: String, aracPlakasi: String): SignupResponse{
+        return SignupResponse("Kayıt Başarılı $username $password $aracPlakasi",true)
+        /*try {
+            val response = mainInstance.signUp(username,password)
             val body = response.body()
             if (response.isSuccessful && response.body().toString() !=null)
             {

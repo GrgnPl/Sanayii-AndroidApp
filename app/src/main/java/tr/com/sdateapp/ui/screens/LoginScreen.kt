@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -36,7 +37,9 @@ import androidx.compose.material3.TextFieldDefaults
 
 @Composable
 fun LoginScreen(
-    onLoginClick: (String, String) -> Unit
+    onLoginClick: (String, String) -> Unit,
+    onSignupNavigate: () -> Unit,
+    onRememberMeChecked: (Boolean) -> Unit
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -115,7 +118,10 @@ fun LoginScreen(
             ) {
                 Checkbox(
                     checked = rememberMe,
-                    onCheckedChange = { rememberMe = it }
+                    onCheckedChange = {
+                        rememberMe = it
+                        onRememberMeChecked(it)
+                    }
                 )
                 Text("Beni hatırla")
             }
@@ -124,7 +130,9 @@ fun LoginScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable {  }
+                    .clickable {
+                        onSignupNavigate()
+                    }
                     .padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
@@ -141,9 +149,6 @@ fun LoginScreen(
                     color = AppOrange
                 )
             }
-
-
-
         }
     }
 }
